@@ -1,0 +1,22 @@
+name = "opl-coach-proxy"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers.dev subdomain for dev + deploy; custom domain optional later.
+workers_dev = true
+
+[vars]
+MODEL_ID = "claude-haiku-4-5-20251001"
+PROMPT_CACHE_TTL = "5m"
+COHORT_CACHE_TTL_SECONDS = "1800"
+
+# ANTHROPIC_API_KEY is set via `wrangler secret put ANTHROPIC_API_KEY` — never
+# committed. Reference it in code via `env.ANTHROPIC_API_KEY`.
+
+# KV namespace for /cohort route. Binding + id provisioned via:
+#   wrangler kv:namespace create COHORT_KV
+# The resulting id is filled in below.
+[[kv_namespaces]]
+binding = "COHORT_KV"
+id = "e6b6f782aa1d4f4a97d66908808fe470"

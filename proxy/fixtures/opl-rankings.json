@@ -1,0 +1,46 @@
+{
+  "_probe": {
+    "url": "https://www.openpowerlifting.org/api/rankings/raw/ipf83/usapl/men/20-23/by-total?start=0&end=5&lang=en&units=kg",
+    "probedAt": "2026-04-16",
+    "columnsByIndex": [
+      "row_index",
+      "rank",
+      "name",
+      "username",
+      "social",
+      "color_band",
+      "country",
+      "state",
+      "federation",
+      "date",
+      "meet_country",
+      "meet_state",
+      "meet_slug",
+      "sex",
+      "equipment",
+      "age",
+      "division",
+      "bodyweight_kg",
+      "weight_class",
+      "squat_kg",
+      "bench_kg",
+      "deadlift_kg",
+      "total_kg",
+      "score"
+    ],
+    "notes": [
+      "Response is a tuple-row format, not object-per-row.",
+      "total_length is the cohort size across the entire filter, not the returned rows.",
+      "Score column (index 23) changes meaning based on /by-* sort suffix (by-dots / by-total / by-wilks / by-goodlift). Under /by-total the score is DOTS by convention.",
+      "Age field may include ~ suffix (estimated). Weight class field may be empty string for meets that didn't record the nominal class.",
+      "Social (idx 4) and color_band (idx 5) are vanity fields — ignored in normalization."
+    ]
+  },
+  "total_length": 6400,
+  "rows": [
+    [0, 1, "Jayden Lowe", "jaydenlowe", "masterl.3", null, "USA", "USA-MS", "USAPL", "2025-04-03", "USA", "OK", "usapl/NS-2025-04", "M", "Raw", "19~", "MR-C", "81.4", "82.5", "290", "192.5", "363", "845.5", "577.15"],
+    [1, 2, "Joseph Borenstein", "josephborenstein", "joe.borenstein", "blue_to_purple_to_red", "USA", "USA-FL", "USAPL", "2024-03-02", "USA", "OH", "usapl/NS-2024-03-J", "M", "Raw", "21", "MR-O", "74.9", "", "285", "202.5", "332.5", "820", "588.44"],
+    [2, 3, "John Haack", "johnhaack", "bilbo_swaggins181", null, "USA", null, "IPF", "2016-06-19", "USA", "TX", "ipf/1601", "M", "Raw", "23", "Open", "82.8", "83", "298", "200", "315", "813", "549.59"],
+    [3, 4, "Alex Luckow", "alexluckow", "luckylifts", null, "USA", "USA-MN", "USAPL", "2023-09-14", "USA", "TN", "usapl/NS-2023-03-K", "M", "Raw", "22", "MR-O", "82", "82.5", "287.5", "182.5", "343", "813", "552.36"]
+  ]
+}

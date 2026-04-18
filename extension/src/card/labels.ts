@@ -1,0 +1,26 @@
+// OPL age-slug → friendly label used in cohort copy and qualifying rows.
+
+export const AGE_SLUGS_TO_LABEL: Record<string, string> = {
+  '5-12': 'youth',
+  '13-15': 'teen 13–15',
+  '16-17': 'teen 16–17',
+  '18-19': 'sub-junior',
+  '20-23': 'junior',
+  '24-34': 'open',
+  '35-39': 'sub-masters',
+  '40-44': 'masters 1',
+  '45-49': 'masters 2',
+  '50-54': 'masters',
+  '55-59': 'masters',
+  '60-64': 'masters 3',
+  '65-69': 'masters',
+  '70-74': 'masters 4',
+  '75-79': 'masters',
+  '80-84': 'masters',
+  '85-89': 'masters',
+  '40-49': 'masters',
+  '50-59': 'masters',
+  '60-69': 'masters',
+  '70-79': 'masters',
+  over80: 'masters 80+',
+};

@@ -4,3 +4,22 @@ node_modules/
 __pycache__/
 .venv/
 .DS_Store
+
+# Memory bank system (per CLAUDE.md exclusion rule — never commit, never delete)
+CLAUDE.md
+CLAUDE-*.md
+
+# Build artifacts
+extension/dist/
+extension/.vite/
+proxy/.wrangler/
+proxy/dist/
+
+# Local tooling / session artifacts
+.agents/
+.claude/
+.mcp.json
+.playwright-mcp/
+session-packages/
+skills-lock.json
+*.zip
