@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPL Assistant — Privacy Policy</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; }
+    h1 { font-size: 24px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+    h2 { font-size: 18px; margin-top: 32px; }
+    ul { padding-left: 24px; }
+    li { margin-bottom: 6px; }
+    code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-size: 14px; }
+    a { color: #0066cc; }
+    .updated { color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>OPL Assistant Privacy Policy</h1>
+  <p class="updated">Last updated: April 17, 2026</p>
+
+  <h2>What OPL Assistant does</h2>
+  <p>OPL Assistant is a browser extension that adds personalized powerlifting context to openpowerlifting.org. It shows your percentile rank, qualifying total gaps, scoring (DOTS/Wilks/IPF GL), and lifter progression charts.</p>
+
+  <h2>Data we collect</h2>
+  <p><strong>None.</strong> OPL Assistant does not collect, store, or transmit any personal data to our servers.</p>
+
+  <h2>Data stored locally</h2>
+  <p>All user data stays in your browser's local storage (<code>chrome.storage.local</code>):</p>
+  <ul>
+    <li><strong>Profile preferences:</strong> bodyweight, age, sex, equipment, federation, weight class, display unit (kg/lb). You enter these voluntarily.</li>
+    <li><strong>Chat thread:</strong> your conversation history with the AI search feature. Stored locally, never transmitted.</li>
+  </ul>
+  <p>You can clear all local data at any time via the extension's "Clear chat" button or by removing the extension.</p>
+
+  <h2>Network requests</h2>
+  <p>OPL Assistant makes the following network requests:</p>
+  <ol>
+    <li><strong>OpenPowerlifting.org API</strong> — to fetch public rankings data and lifter competition history. This is the same data visible on the OpenPowerlifting website.</li>
+    <li><strong>OPL Assistant proxy server</strong> (Cloudflare Worker) — to parse natural language search queries into structured filters (via Anthropic's Claude API), cache and proxy OpenPowerlifting API responses for performance, and generate short insight text about rankings data. The proxy server does <strong>not</strong> log, store, or retain any user queries or data. It processes requests statelessly and returns results.</li>
+  </ol>
+
+  <h2>Third-party services</h2>
+  <ul>
+    <li><strong>Anthropic Claude API</strong> — used server-side (through our proxy) for natural language parsing. Your search queries are sent to Anthropic for processing but are not stored by our proxy. Anthropic's data handling is governed by their <a href="https://www.anthropic.com/privacy">privacy policy</a>.</li>
+    <li><strong>OpenPowerlifting</strong> — public powerlifting data. All data on OpenPowerlifting is already publicly available.</li>
+  </ul>
+
+  <h2>No accounts, no tracking</h2>
+  <ul>
+    <li>No user accounts or login</li>
+    <li>No analytics or telemetry</li>
+    <li>No cookies</li>
+    <li>No advertising</li>
+    <li>No data sold or shared with third parties</li>
+  </ul>
+
+  <h2>Permissions explained</h2>
+  <ul>
+    <li><strong><code>storage</code></strong> — to save your profile preferences and chat history locally in your browser</li>
+    <li><strong><code>activeTab</code></strong> — to inject the AI Search drawer and lifter charts on openpowerlifting.org pages</li>
+    <li><strong>Host permissions for openpowerlifting.org</strong> — to read page content and inject UI enhancements</li>
+    <li><strong>Host permission for our Cloudflare Worker</strong> — to communicate with the proxy server for search parsing and data caching</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>For questions about this privacy policy, contact <a href="mailto:ewl172003@gmail.com">ewl172003@gmail.com</a>.</p>
+</body>
+</html>
