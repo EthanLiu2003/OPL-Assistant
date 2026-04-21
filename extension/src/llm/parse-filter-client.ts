@@ -9,10 +9,16 @@ export type ProfileExtract = {
   ageYears: number | null;
 };
 
+export type MeetIntent = {
+  federation: 'USAPL' | 'PA' | 'USPA' | null;
+  state: string | null;
+};
+
 export type ParseFilterResult = {
   parsed: ParsedFilter;
   federations: string[] | null;
   profile: ProfileExtract | null;
+  meetIntent: MeetIntent | null;
   source: ParseFilterSource;
   model?: string;
 };
@@ -43,6 +49,7 @@ export const parseFilterLLM = async (
       parsed: ParsedFilter;
       federations?: string[] | null;
       profile: ProfileExtract | null;
+      meetIntent?: MeetIntent | null;
       model?: string;
       cached?: boolean;
     };
@@ -52,6 +59,7 @@ export const parseFilterLLM = async (
       parsed: data.parsed,
       federations: data.federations ?? null,
       profile: data.profile ?? null,
+      meetIntent: data.meetIntent ?? null,
       source: data.cached ? 'llm-cached' : 'llm',
       model: data.model,
     };

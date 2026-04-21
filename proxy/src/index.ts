@@ -3,6 +3,12 @@ import { handleCohort } from './cohort';
 import { handleLifterCsv } from './lifter-csv';
 import { handleNarrate } from './narrate';
 import { handleParseFilter } from './parse-filter';
+import {
+  handleUsaplMeets,
+  handlePaMeets,
+  handleUspaMeets,
+  handleLiftingcastMeet,
+} from './meets';
 import { checkRateLimit } from './rate-limit';
 
 export type Env = {
@@ -48,6 +54,27 @@ export default {
     if (lifterMatch) {
       if (request.method !== 'GET') return errorResponse('method not allowed', 405);
       return handleLifterCsv(request, env, lifterMatch[1]);
+    }
+
+    if (url.pathname === '/meets/usapl') {
+      if (request.method !== 'GET') return errorResponse('method not allowed', 405);
+      return handleUsaplMeets(request, env);
+    }
+
+    if (url.pathname === '/meets/pa') {
+      if (request.method !== 'GET') return errorResponse('method not allowed', 405);
+      return handlePaMeets(request, env);
+    }
+
+    if (url.pathname === '/meets/uspa') {
+      if (request.method !== 'GET') return errorResponse('method not allowed', 405);
+      return handleUspaMeets(request, env);
+    }
+
+    const liftingcastMatch = url.pathname.match(/^\/meets\/liftingcast\/([a-z0-9._-]+)$/i);
+    if (liftingcastMatch) {
+      if (request.method !== 'GET') return errorResponse('method not allowed', 405);
+      return handleLiftingcastMeet(request, env, liftingcastMatch[1]);
     }
 
     return errorResponse('not found', 404);

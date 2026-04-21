@@ -263,7 +263,24 @@ const mount = () => {
   if (document.getElementById(HOST_ID)) return;
   const host = document.createElement('div');
   host.id = HOST_ID;
-  host.style.all = 'initial';
+  // Anchor the host to the viewport so the shadow-DOM children's
+  // `position: fixed` always resolves against the viewport. Without this, any
+  // ancestor (including <html>) that picks up `transform`/`filter`/`contain`
+  // — which OPL does at wider breakpoints — would re-root our fixed
+  // positioning and push the tab off-screen.
+  host.setAttribute(
+    'style',
+    [
+      'all: initial',
+      'position: fixed',
+      'top: 0',
+      'left: 0',
+      'width: 100vw',
+      'height: 100vh',
+      'pointer-events: none',
+      'z-index: 2147483647',
+    ].join(';'),
+  );
   document.documentElement.appendChild(host);
   const shadow = host.attachShadow({ mode: 'open' });
   const style = document.createElement('style');

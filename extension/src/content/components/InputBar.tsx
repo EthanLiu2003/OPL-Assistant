@@ -23,7 +23,7 @@ export const InputBar = forwardRef<HTMLInputElement, InputBarProps>(
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onKeyUp={(e) => e.stopPropagation()}
-          placeholder="ask a filter or 'where I stand\u2026'"
+          placeholder="Search for lifters, rankings, or stats…"
           className="input"
           aria-label="Chat prompt"
         />

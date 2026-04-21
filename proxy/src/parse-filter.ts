@@ -85,6 +85,33 @@ const clampNumber = (
   return n;
 };
 
+type MeetIntent = {
+  federation: 'USAPL' | 'PA' | 'USPA' | null;
+  state: string | null;
+};
+
+const ALLOWED_MEET_FEDS = new Set(['USAPL', 'PA', 'USPA']);
+
+const normalizeMeetIntent = (raw: unknown): MeetIntent | null => {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== 'object') return null;
+  const src = raw as Record<string, unknown>;
+  let federation: MeetIntent['federation'] = null;
+  if (typeof src.federation === 'string') {
+    const fed = src.federation.toUpperCase();
+    if (ALLOWED_MEET_FEDS.has(fed)) {
+      federation = fed as MeetIntent['federation'];
+    }
+  }
+  let state: string | null = null;
+  if (typeof src.state === 'string') {
+    const s = src.state.trim().toUpperCase();
+    if (/^[A-Z]{2}$/.test(s)) state = s;
+  }
+  if (federation === null && state === null) return { federation: null, state: null };
+  return { federation, state };
+};
+
 const normalizeProfile = (raw: unknown): ProfileExtract | null => {
   if (raw === null || raw === undefined) return null;
   if (typeof raw !== 'object') return null;
@@ -167,6 +194,7 @@ export const handleParseFilter = async (
     parsed: normalizeFilter(parsedObj),
     federations: normalizeFederations(parsedObj.federations),
     profile: normalizeProfile(parsedObj.profile),
+    meetIntent: normalizeMeetIntent(parsedObj.meetIntent),
     model: anthropicResp.model,
     cached: cacheHit,
   });

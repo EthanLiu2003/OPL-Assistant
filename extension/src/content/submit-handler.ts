@@ -26,7 +26,9 @@ import { buildWhereYouStandCard } from '@/card/build-card';
 import { buildSuggestions } from '@/chat/SuggestionChips';
 import { summarizeFilter } from '@/search/parse-filter-prompt';
 import type { CohortResponse } from '@/cohort/cohort-client';
-import type { WhereYouStandCard } from '@/chat/types';
+import type { WhereYouStandCard, MeetsSummary } from '@/chat/types';
+import { fetchMeets } from '@/meets/meets-client';
+import type { MeetFederation } from '@/meets/types';
 
 const newId = (): string => crypto.randomUUID();
 const now = (): string => new Date().toISOString();
@@ -85,8 +87,32 @@ async function runParse(
   activeFilter: ParsedFilter | null,
 ): Promise<ParseFilterResult> {
   const llm = await parseFilterLLM(prompt, activeFilter ?? undefined);
-  if (llm && (hasAnyFilter(llm.parsed) || llm.profile)) return llm;
-  return { parsed: parseFilterPrompt(prompt), federations: null, profile: null, source: 'heuristic' };
+  if (llm && (hasAnyFilter(llm.parsed) || llm.profile || llm.meetIntent)) return llm;
+  return {
+    parsed: parseFilterPrompt(prompt),
+    federations: null,
+    profile: null,
+    meetIntent: null,
+    source: 'heuristic',
+  };
+}
+
+// Heuristic fallback for meet queries when the LLM is unreachable. Matches
+// "upcoming meets", "meet calendar", "events in X", "competitions".
+const MEET_KEYWORD_RE = /\b(upcoming\s+meets?|meet\s+calendar|events?\s+in\s+|competitions?\s+in\s+|when\s+is\s+the\s+next\s+meet|next\s+(usapl|uspa|pa|powerlifting\s+america)\s+meet)\b/i;
+
+function detectMeetIntentHeuristic(text: string): {
+  federation: 'USAPL' | 'PA' | 'USPA' | null;
+  state: string | null;
+} | null {
+  if (!MEET_KEYWORD_RE.test(text)) return null;
+  let federation: 'USAPL' | 'PA' | 'USPA' | null = null;
+  if (/\busapl\b/i.test(text)) federation = 'USAPL';
+  else if (/\buspa\b/i.test(text)) federation = 'USPA';
+  else if (/\b(pa|powerlifting\s+america)\b/i.test(text)) federation = 'PA';
+  const stateMatch = text.match(/\b([A-Z]{2})\b/);
+  const state = stateMatch ? stateMatch[1] : null;
+  return { federation, state };
 }
 
 function toCohortSummary(cohort: CohortResponse) {
@@ -157,6 +183,38 @@ export async function handleSubmit(
     return { turns, narrationTarget };
   }
 
+  const meetIntent =
+    parseResult.meetIntent ?? detectMeetIntentHeuristic(text);
+  if (meetIntent) {
+    const fed: MeetFederation | null = meetIntent.federation;
+    const state = meetIntent.state;
+    const result = await fetchMeets({ federation: fed, state });
+
+    const summary: MeetsSummary = {
+      meets: result.meets,
+      sources: result.sources,
+      federation: fed,
+      state,
+    };
+
+    const scope = fed ? fed : 'all federations';
+    const stateLabel = state ? ` in ${state}` : '';
+    const templateText =
+      result.meets.length === 0
+        ? `No upcoming meets found${stateLabel} for ${scope}.`
+        : `Showing ${result.meets.length.toLocaleString()} upcoming ${scope} meet${result.meets.length === 1 ? '' : 's'}${stateLabel}.`;
+
+    turns.push({
+      role: 'assistant', id: newId(), kind: 'result',
+      parsed: mergedFilter, profile: parseResult.profile,
+      meets: summary,
+      suggestions: [],
+      templateText,
+      source: parseResult.source, createdAt: now(),
+    } satisfies AssistantTurn);
+    return { turns, narrationTarget };
+  }
+
   if (intent === 'where-you-stand') {
     const total = parseResult.profile?.totalKg ?? profile?.currentTotalKg ?? threadProfile?.totalKg;
     const bw = parseResult.profile?.bodyweightKg ?? profile?.bodyweightKg ?? threadProfile?.bodyweightKg;
@@ -182,7 +240,14 @@ export async function handleSubmit(
       return { turns, narrationTarget };
     }
 
-    const cohort = await fetchCohort(mergedFilter, { userTotalKg: total });
+    // Strip `q` — for where-you-stand the user's total+bw identifies them
+    // within the cohort. Leaving q set forces the Worker into the slower
+    // name-search path which can blow past the fetch timeout on a cold cache.
+    const standFilter: ParsedFilter = { ...mergedFilter, q: undefined };
+    const cohort = await fetchCohort(standFilter, {
+      userTotalKg: total,
+      timeoutMs: 15000,
+    });
     if (!cohort) {
       turns.push({
         role: 'assistant', id: newId(), kind: 'error',

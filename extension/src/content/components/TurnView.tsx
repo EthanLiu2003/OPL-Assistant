@@ -4,6 +4,7 @@ import { UserBubble } from '@/chat/UserBubble';
 import { ClarifyBubble } from '@/chat/ClarifyBubble';
 import { WhereYouStandCard as WhereYouStandCardUi } from '@/card/WhereYouStandCard';
 import { CohortPreview } from './CohortPreview';
+import { MeetsList } from './MeetsList';
 
 type TurnViewProps = {
   turn: ChatTurn;
@@ -36,7 +37,9 @@ export const TurnView = ({
     <div className="bubble-row assistant">
       <div className="bubble assistant-bubble">
         <div className="result-template">{turn.templateText}</div>
-        {turn.card ? (
+        {turn.meets ? (
+          <MeetsList summary={turn.meets} />
+        ) : turn.card ? (
           <WhereYouStandCardUi
             card={turn.card}
             displayUnit={displayUnit}

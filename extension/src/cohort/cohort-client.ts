@@ -51,16 +51,22 @@ const toQuery = (filter: ParsedFilter, userTotalKg: number | null): URLSearchPar
   return params;
 };
 
-// Hits the Worker /cohort endpoint with a 6s budget. Binary search on a large
-// cohort is ~6 chained OPL requests; 6s leaves headroom for each to complete.
+// Hits the Worker /cohort endpoint. Default 6s budget covers cache hits and
+// typical cohort fetches. Pass `timeoutMs` higher for cold-cache paths like
+// where-you-stand with a large cohort + binary rank search (~4-6s on OPL's
+// bad days).
 export const fetchCohort = async (
   filter: ParsedFilter,
-  opts: { userTotalKg?: number | null; signal?: AbortSignal } = {},
+  opts: {
+    userTotalKg?: number | null;
+    signal?: AbortSignal;
+    timeoutMs?: number;
+  } = {},
 ): Promise<CohortResponse | null> => {
   if (!env.PROXY_URL) return null;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 6000);
+  const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? 6000);
   const signal = opts.signal
     ? anySignal([controller.signal, opts.signal])
     : controller.signal;

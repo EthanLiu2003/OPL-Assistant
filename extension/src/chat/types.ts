@@ -2,6 +2,7 @@ import type { AgeDivision, Equipment, Federation, Sex } from '@/lib/types';
 import type { ParsedFilter } from '@/search/opl-url';
 import type { ParseFilterSource, ProfileExtract } from '@/llm/parse-filter-client';
 import type { CohortLifter } from '@/cohort/cohort-client';
+import type { Meet } from '@/meets/types';
 
 export type CohortSummary = {
   totalCount: number;
@@ -53,6 +54,13 @@ export type UserTurn = {
   createdAt: string;
 };
 
+export type MeetsSummary = {
+  meets: Meet[];
+  sources: Array<{ source: string; ok: boolean; count: number }>;
+  federation: 'USAPL' | 'PA' | 'USPA' | null;
+  state: string | null;
+};
+
 export type AssistantTurn = {
   role: 'assistant';
   id: string;
@@ -61,6 +69,7 @@ export type AssistantTurn = {
   profile: ProfileExtract | null;
   cohort?: CohortSummary;
   card?: WhereYouStandCard;
+  meets?: MeetsSummary;
   suggestions: string[];
   templateText: string;
   narrateLine?: string;

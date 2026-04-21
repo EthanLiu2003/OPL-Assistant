@@ -16,7 +16,8 @@ SCHEMA
   "eventSlug": "full-power"|"push-pull"|null,
   "q": string|null,
   "federations": string[]|null,
-  "profile": {"totalKg":number|null,"bodyweightKg":number|null,"ageYears":number|null}|null
+  "profile": {"totalKg":number|null,"bodyweightKg":number|null,"ageYears":number|null}|null,
+  "meetIntent": {"federation":"USAPL"|"PA"|"USPA"|null,"state":string|null} | null
 }
 
 PRIORITY RULES (apply in order)
@@ -41,6 +42,8 @@ PRIORITY RULES (apply in order)
 
 5. DELTA PROMPTS: if "activeFilter:" precedes the user message, only emit changed fields. Caller merges.
 
+6. MEET INTENT: if the user asks about upcoming meets, competitions, events, or a calendar ("meets near me", "upcoming USAPL meets", "events in NJ", "when is the next USPA meet"), populate meetIntent with federation (USAPL/PA/USPA, else null for "any") and state (US 2-letter code if stated, else null). All other fields should be null unless the user combined meet intent with a filter query. Do not set meetIntent for general results queries.
+
 FEDERATION SLUGS (use exact):
   usapl, uspa, uspa-tested, amp, ipf, ipl, rps, spf, apa, apf, cpu, bp, epa, wrpf-and-affiliates, wrpf-usa, all, all-tested, all-usa
   "Powerlifting America" = "amp" (NOT "pa" — "pa" is Powerlifting Australia in OPL).
@@ -53,24 +56,30 @@ EQUIPMENT: raw(sleeves/classic) wraps(knee wraps) raw_wraps(default/unspecified)
 EXAMPLES
 
 "USAPL 82.5kg raw juniors"
-→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":"usapl","sex":null,"ageSlug":"20-23","year":null,"eventSlug":null,"q":null,"federations":null,"profile":null}
+→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":"usapl","sex":null,"ageSlug":"20-23","year":null,"eventSlug":null,"q":null,"federations":null,"profile":null,"meetIntent":null}
 
 "my name is ethan liu im in the usapl my weight class is 75kg"
-→ {"equipment":null,"weightClassSlug":"75","federationSlug":"usapl","sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":"Ethan Liu","federations":null,"profile":null}
+→ {"equipment":null,"weightClassSlug":"75","federationSlug":"usapl","sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":"Ethan Liu","federations":null,"profile":null,"meetIntent":null}
 
 "24yo raw 82.5kg hit 585 USAPL male, bw 82.3"
-→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":"usapl","sex":"M","ageSlug":"20-23","year":null,"eventSlug":null,"q":null,"federations":null,"profile":{"totalKg":585,"bodyweightKg":82.3,"ageYears":24}}
+→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":"usapl","sex":"M","ageSlug":"20-23","year":null,"eventSlug":null,"q":null,"federations":null,"profile":{"totalKg":585,"bodyweightKg":82.3,"ageYears":24},"meetIntent":null}
 
 "AMP 83kg raw open men"
-→ {"equipment":"raw","weightClassSlug":"ipf83","federationSlug":"amp","sex":"M","ageSlug":"24-34","year":null,"eventSlug":null,"q":null,"federations":null,"profile":null}
+→ {"equipment":"raw","weightClassSlug":"ipf83","federationSlug":"amp","sex":"M","ageSlug":"24-34","year":null,"eventSlug":null,"q":null,"federations":null,"profile":null,"meetIntent":null}
 
 "lifters named bryce mitchell"
-→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":"Bryce Mitchell","federations":null,"profile":null}
+→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":"Bryce Mitchell","federations":null,"profile":null,"meetIntent":null}
 
 "USAPL or USPA 82.5kg raw"
-→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":["usapl","uspa"],"profile":null}
+→ {"equipment":"raw","weightClassSlug":"82.5","federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":["usapl","uspa"],"profile":null,"meetIntent":null}
+
+"upcoming USAPL meets in NJ"
+→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":null,"profile":null,"meetIntent":{"federation":"USAPL","state":"NJ"}}
+
+"what meets are coming up"
+→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":null,"ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":null,"profile":null,"meetIntent":{"federation":null,"state":null}}
 
 "also show women only"
-→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":"F","ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":null,"profile":null}
+→ {"equipment":null,"weightClassSlug":null,"federationSlug":null,"sex":"F","ageSlug":null,"year":null,"eventSlug":null,"q":null,"federations":null,"profile":null,"meetIntent":null}
 
 Now parse the user's prompt. Return ONLY the JSON object.`;
